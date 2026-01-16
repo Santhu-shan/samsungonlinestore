@@ -53,6 +53,7 @@
             color:white;
             box-shadow:0 6px 20px rgba(0,113,227,0.18), inset 0 -6px 12px rgba(255,255,255,0.06);
             font-size:18px;
+            cursor:pointer;
         }
         .brand span{font-weight:600;letter-spacing:0.6px}
         .nav{
@@ -74,9 +75,13 @@
             color:white;padding:10px 14px;border-radius:10px;font-weight:600;border:none;
             box-shadow:0 6px 18px rgba(0,113,227,0.2);
             cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
         }
         .ghost{
             background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:9px 12px;border-radius:10px;
+            cursor:pointer;
         }
 
         /* Hero */
@@ -135,9 +140,12 @@
         .card{
             background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
             padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);
-            transition:transform .22s ease, box-shadow .22s ease;
+            transition:transform .22s ease, box-shadow .22s ease, opacity .5s ease, transform .5s ease;
             display:flex;flex-direction:column;gap:10px;
+            opacity:0;
+            transform:translateY(16px);
         }
+        .card.visible{opacity:1;transform:none}
         .card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(2,6,23,0.6)}
         .thumb{height:130px;border-radius:12px;background:linear-gradient(135deg,#021328 40%, #002b46);display:grid;place-items:center;color:rgba(255,255,255,0.9);font-weight:700;font-size:18px}
         .meta{display:flex;justify-content:space-between;align-items:center}
@@ -158,6 +166,32 @@
             gap:12px;
         }
 
+        /* Toast */
+        #toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:10px;z-index:9999}
+        .toast{
+            background:linear-gradient(90deg,var(--accent),#00c2ff);
+            color:#042033;padding:10px 14px;border-radius:10px;font-weight:700;box-shadow:0 10px 30px rgba(0,113,227,0.12);
+            transform:translateX(20px);opacity:0;transition:opacity .18s ease, transform .24s cubic-bezier(.2,.9,.2,1);
+        }
+        .toast.show{opacity:1;transform:none}
+
+        /* Modal */
+        .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:grid;place-items:center;z-index:9998;opacity:0;pointer-events:none;transition:opacity .18s ease}
+        .modal-backdrop.show{opacity:1;pointer-events:auto}
+        .modal{
+            background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);min-width:320px;color:inherit;
+            box-shadow:0 20px 50px rgba(2,6,23,0.7)
+        }
+        .modal h3{margin:0 0 8px 0}
+        .modal form{display:flex;gap:8px}
+        .modal input{flex:1;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+        .modal .actions{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+
+        /* small interactions */
+        .pulse{animation:pulse .38s ease}
+        @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(0.96)}100%{transform:scale(1)}}
+
         /* Responsive */
         @media (max-width:980px){
             .hero{grid-template-columns:1fr;align-items:stretch}
@@ -172,10 +206,10 @@
         }
     </style>
 </head>
-<body>
-    <header class="header" role="banner">
-        <a class="brand" href="#">
-            <div class="logo">S</div>
+<body></body>
+    <header class="header" role="banner"></header>
+        <a class="brand" href="#"></a>
+            <div class="logo" id="logo">S</div>
             <div>
                 <div style="font-size:15px">SAMSUNG</div>
                 <div style="font-size:11px;color:var(--muted);margin-top:2px">Online Store</div>
@@ -189,9 +223,9 @@
             <a href="#">TV & Audio</a>
         </nav>
 
-        <div class="actions">
-            <button class="ghost">Sign in</button>
-            <button class="btn">Cart</button>
+        <div class="actions"></div>
+            <button class="ghost" id="signinBtn">Sign in</button>
+            <button class="btn" id="cartBtn">Cart <span id="cartCount" style="margin-left:6px;font-weight:800">0</span></button>
         </div>
     </header>
 
@@ -241,8 +275,8 @@
                         <div class="muted" style="font-size:13px;margin-top:6px">Available now • 128GB</div>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:8px">
-                        <button class="btn" style="padding:8px 12px">Buy</button>
-                        <button class="ghost" style="padding:8px 10px">Notify me</button>
+                        <button class="btn" style="padding:8px 12px" id="buyFeatured">Buy</button>
+                        <button class="ghost" style="padding:8px 10px" id="notifyFeatured">Notify me</button>
                     </div>
                 </div>
             </aside>
@@ -275,19 +309,19 @@
 
                 <article class="card">
                     <div class="thumb">Galaxy Z Fold<br><small class="muted" style="font-size:12px">Cream</small></div>
-                    <div class="meta">
+                    <div class="meta"></div>
                         <div>
                             <div class="title">Galaxy Z Fold</div>
                             <div class="muted">512GB • Foldable</div>
                         </div>
-                        <div class="buy">
+                        <div class="buy"></div>
                             <div class="price">$1,799</div>
                             <button class="small-btn">Add</button>
                         </div>
                     </div>
                 </article>
 
-                <article class="card">
+                <article class="card"></article>
                     <div class="thumb">Galaxy Tab<br><small class="muted" style="font-size:12px">Silver</small></div>
                     <div class="meta">
                         <div>
@@ -327,5 +361,174 @@
             <div class="muted">Terms</div>
         </div>
     </footer>
+
+    <!-- Toasts -->
+    <div id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Notify / Sign-in modal backdrop -->
+    <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <h3 id="modalTitle">Notify me</h3>
+            <p class="muted" id="modalSubtitle" style="margin-top:4px;margin-bottom:8px">Enter your email and we'll notify you when it's available.</p>
+            <form id="notifyForm">
+                <input type="email" id="notifyEmail" placeholder="you@example.com" required />
+                <button class="btn" type="submit">Save</button>
+            </form>
+            <div class="actions" style="margin-top:8px">
+                <button class="ghost" id="closeModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lightweight interactivity: cart, toasts, notify modal, entry reveal
+        (function () {
+            const CART_KEY = 'sample_store_cart_count';
+            const cartCountEl = document.getElementById('cartCount');
+            const cartBtn = document.getElementById('cartBtn');
+            const toasts = document.getElementById('toasts');
+            const modalBackdrop = document.getElementById('modalBackdrop');
+            const notifyForm = document.getElementById('notifyForm');
+            const notifyEmail = document.getElementById('notifyEmail');
+            const closeModalBtn = document.getElementById('closeModal');
+            const signinBtn = document.getElementById('signinBtn');
+            const logo = document.getElementById('logo');
+
+            // Restore cart count from localStorage
+            function readCart() {
+                return parseInt(localStorage.getItem(CART_KEY) || '0', 10);
+            }
+            function writeCart(n) {
+                localStorage.setItem(CART_KEY, String(n));
+                cartCountEl.textContent = String(n);
+            }
+            function addToCart(name, price) {
+                const current = readCart();
+                writeCart(current + 1);
+                showToast(`${name} added • ${price}`);
+            }
+
+            function showToast(text, ms = 3000) {
+                const el = document.createElement('div');
+                el.className = 'toast';
+                el.textContent = text;
+                toasts.appendChild(el);
+                // trigger transition
+                requestAnimationFrame(() => el.classList.add('show'));
+                setTimeout(() => {
+                    el.classList.remove('show');
+                    setTimeout(() => el.remove(), 300);
+                }, ms);
+            }
+
+            // Animate a card briefly
+            function animateCard(card) {
+                card.classList.add('pulse');
+                setTimeout(() => card.classList.remove('pulse'), 380);
+            }
+
+            // Wire up "Add" buttons
+            document.querySelectorAll('.small-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const card = e.target.closest('.card');
+                    const name = card.querySelector('.title')?.textContent?.trim() || 'Item';
+                    const price = card.querySelector('.price')?.textContent?.trim() || '';
+                    addToCart(name, price);
+                    animateCard(card);
+                });
+            });
+
+            // Featured buy button (quick add)
+            document.getElementById('buyFeatured').addEventListener('click', () => {
+                addToCart('Galaxy S — Midnight', '$799');
+                showToast('Fast checkout simulated — proceed to cart to complete purchase');
+            });
+
+            // Notify modal handling
+            function openModal(subtitle = '') {
+                document.getElementById('modalSubtitle').textContent = subtitle || 'Enter your email and we\'ll notify you when it\'s available.';
+                modalBackdrop.classList.add('show');
+                modalBackdrop.setAttribute('aria-hidden', 'false');
+                notifyEmail.focus();
+            }
+            function closeModal() {
+                modalBackdrop.classList.remove('show');
+                modalBackdrop.setAttribute('aria-hidden', 'true');
+                notifyForm.reset();
+            }
+
+            // Wire notify buttons (including featured)
+            document.querySelectorAll('.ghost').forEach(btn => {
+                if (btn.id === 'signinBtn') return;
+                btn.addEventListener('click', (e) => {
+                    const txt = e.target.textContent.trim().toLowerCase();
+                    if (txt.includes('notify')) {
+                        // pick nearest product title as context if available
+                        const card = e.target.closest('.card');
+                        const product = card ? (card.querySelector('.title')?.textContent || '') : document.querySelector('.hero-card h1')?.textContent || '';
+                        openModal(product ? `Notify me about "${product}"` : '');
+                    }
+                });
+            });
+
+            notifyForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = notifyEmail.value.trim();
+                if (!email) return;
+                closeModal();
+                showToast(`We'll notify ${email}. Thanks!`);
+            });
+            closeModalBtn.addEventListener('click', closeModal);
+            modalBackdrop.addEventListener('click', (e) => {
+                if (e.target === modalBackdrop) closeModal();
+            });
+
+            // Sign-in demo: lightweight prompt
+            signinBtn.addEventListener('click', () => {
+                const name = prompt('Enter your name to simulate sign-in:');
+                if (name) {
+                    showToast(`Welcome back, ${name}!`);
+                }
+            });
+
+            // Logo double-click to clear cart (small demo)
+            logo.addEventListener('dblclick', () => {
+                if (confirm('Clear stored cart count?')) {
+                    writeCart(0);
+                    showToast('Cart cleared');
+                }
+            });
+
+            // Keep UI in sync
+            writeCart(readCart());
+
+            // IntersectionObserver to reveal cards on scroll
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, {threshold: 0.12});
+            document.querySelectorAll('.card').forEach(card => io.observe(card));
+
+            // Keyboard shortcut: press "c" to open cart (simulated)
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'c' && !e.metaKey && !e.ctrlKey) {
+                    e.preventDefault();
+                    showToast(`Cart has ${readCart()} item(s).`);
+                }
+            });
+
+            // Small UX: when user adds an item, briefly flash the cart button
+            const originalCartShadow = cartBtn.style.boxShadow;
+            const observerAdd = new MutationObserver(() => {
+                cartBtn.classList.add('pulse');
+                setTimeout(() => cartBtn.classList.remove('pulse'), 380);
+            });
+            observerAdd.observe(cartCountEl, {childList: true, characterData: true, subtree: true});
+        })();
+    </script>
 </body>
-</html>
+</html></article></div>
